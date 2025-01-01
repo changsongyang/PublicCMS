@@ -16,7 +16,7 @@
         <module>publiccms-oss</module>
     </modules>
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,14 +34,14 @@
         <version.juint>5.11.4</version.juint>
         <!-- http://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core -->
         <!-- http://hibernate.org/orm/releases/ -->
-        <version.hibernate>6.6.4.Final</version.hibernate>
+        <version.hibernate>7.0.0.Beta3</version.hibernate>
         <!-- https://mvnrepository.com/artifact/org.hibernate.tool/hibernate-tools-orm -->
-        <version.hibernateTools>6.6.2.Final</version.hibernateTools>
+        <version.hibernateTools>7.0.0.Beta1</version.hibernateTools>
         <!-- https://mvnrepository.com/artifact/org.hibernate.search/hibernate-search-mapper-orm/ -->
         <!-- http://hibernate.org/search/releases/ -->
-        <version.hibernateSearch>7.2.2.Final</version.hibernateSearch>
+        <version.hibernateSearch>8.0.0.Alpha1</version.hibernateSearch>
         <!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
-        <version.hibernateValidator>8.0.1.Final</version.hibernateValidator>
+        <version.hibernateValidator>9.0.0.CR1</version.hibernateValidator>
         <!-- http://mvnrepository.com/artifact/org.mybatis/mybatis -->
         <version.mybatis>3.5.17</version.mybatis>
         <!-- http://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
@@ -59,7 +59,7 @@
         <!-- http://mvnrepository.com/artifact/org.freemarker/freemarker -->
         <version.freemarker>2.3.34</version.freemarker>
         <!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
-        <version.lucene>9.11.1</version.lucene>
+        <version.lucene>10.1.0</version.lucene>
         <!-- http://mvnrepository.com/artifact/redis.clients/jedis -->
         <!-- https://github.com/redis/jedis -->
         <version.jedis>5.2.0</version.jedis>
@@ -120,7 +120,7 @@
         <!-- https://mvnrepository.com/artifact/com.sun.mail/jakarta.mail -->
         <version.mail>2.0.1</version.mail>
         <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
-        <version.jaxb>2.3.9</version.jaxb>
+        <version.jaxb>4.0.5</version.jaxb>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -243,7 +243,7 @@
             </dependency>
             <dependency>
                 <groupId>org.hibernate.search</groupId>
-                <artifactId>hibernate-search-backend-lucene</artifactId>
+                <artifactId>hibernate-search-backend-lucene-next</artifactId>
                 <version>${version.hibernateSearch}</version>
             </dependency>
             <dependency>
