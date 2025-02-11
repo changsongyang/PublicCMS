@@ -62,7 +62,31 @@ public class ConfigDataComponent implements SiteCache {
             }
         }
     }
+
+    public static Float getFloat(String value) {
+        if (CommonUtils.empty(value)) {
+            return null;
+        } else {
+            try {
+                return Float.parseFloat(value);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+    }
     
+    public static Float getFloat(String value,float defaultValue) {
+        if (CommonUtils.empty(value)) {
+            return null;
+        } else {
+            try {
+                return Float.parseFloat(value);
+            } catch (NumberFormatException e) {
+                return defaultValue;
+            }
+        }
+    }
+
     public static int getInt(String value, int defaultValue) {
         if (CommonUtils.empty(value)) {
             return defaultValue;

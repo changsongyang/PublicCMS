@@ -74,8 +74,8 @@ public class TemplateCacheComponent implements Cache {
     private ConfigDataComponent configDataComponent;
     private Map<String, ParameterTypeHandler<?, ?>> parameterTypeHandlerMap;
 
-    public String getViewName(LocaleResolver localeResolver, SysSite site, Long id, Integer pageIndex, String requestPath,
-            String body, HttpServletRequest request, HttpServletResponse response, ModelMap model) {
+    public String getViewName(LocaleResolver localeResolver, SysSite site, Long id, Integer pageIndex, String requestPath, String body, HttpServletRequest request, HttpServletResponse response,
+            ModelMap model) {
         requestPath = siteComponent.getPath(site, requestPath);
         SysDomain domain = siteComponent.getDomain(request.getServerName());
         String fullRequestPath = siteComponent.getViewName(site.getId(), domain, requestPath);
@@ -97,15 +97,13 @@ public class TemplateCacheComponent implements Cache {
                             requestPath = CommonUtils.joinString(requestPath, Constants.UNDERLINE, pageIndex);
                         }
                     }
-                    return sb.append(loginPath).append("?returnUrl=")
-                            .append(RequestUtils.getEncodePath(requestPath, request.getQueryString())).toString();
+                    return sb.append(loginPath).append("?returnUrl=").append(RequestUtils.getEncodePath(requestPath, request.getQueryString())).toString();
                 } else {
                     return sb.append(site.getDynamicPath()).toString();
                 }
             }
             String[] acceptParameters = StringUtils.split(metadata.getAcceptParameters(), Constants.COMMA);
-            if (CommonUtils.notEmpty(acceptParameters) && !billingRequestParametersToModel(request, acceptParameters, id,
-                    pageIndex, metadata.getParameterTypeMap(), site, model)) {
+            if (CommonUtils.notEmpty(acceptParameters) && !billingRequestParametersToModel(request, acceptParameters, id, pageIndex, metadata.getParameterTypeMap(), site, model)) {
                 try {
                     response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 } catch (IOException e) {
@@ -124,12 +122,10 @@ public class TemplateCacheComponent implements Cache {
                 int cacheMillisTime = metadata.getCacheTime() * 1000;
                 String cacheControl = request.getHeader("Cache-Control");
                 String pragma = request.getHeader("Pragma");
-                if (CommonUtils.notEmpty(cacheControl) && "no-cache".equalsIgnoreCase(cacheControl)
-                        || CommonUtils.notEmpty(pragma) && "no-cache".equalsIgnoreCase(pragma)) {
+                if (CommonUtils.notEmpty(cacheControl) && "no-cache".equalsIgnoreCase(cacheControl) || CommonUtils.notEmpty(pragma) && "no-cache".equalsIgnoreCase(pragma)) {
                     cacheMillisTime = 0;
                 }
-                return getCachedPath(requestPath, fullRequestPath, localeResolver.resolveLocale(request), cacheMillisTime,
-                        acceptParameters, request, model);
+                return getCachedPath(requestPath, fullRequestPath, localeResolver.resolveLocale(request), cacheMillisTime, acceptParameters, request, model);
             }
         } else {
             try {
@@ -140,8 +136,8 @@ public class TemplateCacheComponent implements Cache {
         return requestPath;
     }
 
-    private boolean billingRequestParametersToModel(HttpServletRequest request, String[] acceptParameters, Long id,
-            Integer pageIndex, Map<String, ParameterType> parameterTypeMap, SysSite site, ModelMap model) {
+    private boolean billingRequestParametersToModel(HttpServletRequest request, String[] acceptParameters, Long id, Integer pageIndex, Map<String, ParameterType> parameterTypeMap, SysSite site,
+            ModelMap model) {
         for (String parameterName : acceptParameters) {
             String[] values = request.getParameterValues(parameterName);
             if ("id".equals(parameterName) && null != id) {
@@ -164,8 +160,7 @@ public class TemplateCacheComponent implements Cache {
                 }
             } else if (!parameterType.isRequired() || CommonUtils.notEmpty(values)) {
                 try {
-                    if (!billingValue(CommonUtils.notEmpty(parameterType.getAlias()) ? parameterType.getAlias() : parameterName,
-                            values, parameterType, site, model)) {
+                    if (!billingValue(CommonUtils.notEmpty(parameterType.getAlias()) ? parameterType.getAlias() : parameterName, values, parameterType, site, model)) {
                         return false;
                     }
                 } catch (IllegalArgumentException e) {
@@ -178,11 +173,9 @@ public class TemplateCacheComponent implements Cache {
         return true;
     }
 
-    private <E, P> boolean billingValue(String parameterName, String[] values, ParameterType parameterType, SysSite site,
-            ModelMap model) {
+    private <E, P> boolean billingValue(String parameterName, String[] values, ParameterType parameterType, SysSite site, ModelMap model) {
         @SuppressWarnings("unchecked")
-        ParameterTypeHandler<E, P> parameterTypeHandler = (ParameterTypeHandler<E, P>) parameterTypeHandlerMap
-                .get(parameterType.getType());
+        ParameterTypeHandler<E, P> parameterTypeHandler = (ParameterTypeHandler<E, P>) parameterTypeHandlerMap.get(parameterType.getType());
         if (null == parameterTypeHandler) {
             if (parameterType.isArray()) {
                 RequestUtils.removeCRLF(values);
@@ -203,12 +196,9 @@ public class TemplateCacheComponent implements Cache {
                         model.addAttribute(parameterName, list);
                     }
                 }
-            } else if (CommonUtils.notEmpty(values) && CommonUtils.notEmpty(values[0])
-                    || parameterTypeHandler.supportDefaultValue() && CommonUtils.notEmpty(parameterType.getDefaultValue())) {
-                P id = parameterTypeHandler.dealParameterValue(
-                        parameterTypeHandler.supportDefaultValue() && CommonUtils.notEmpty(parameterType.getDefaultValue())
-                                ? parameterType.getDefaultValue()
-                                : values[0]);
+            } else if (CommonUtils.notEmpty(values) && CommonUtils.notEmpty(values[0]) || parameterTypeHandler.supportDefaultValue() && CommonUtils.notEmpty(parameterType.getDefaultValue())) {
+                P id = parameterTypeHandler
+                        .dealParameterValue(parameterTypeHandler.supportDefaultValue() && CommonUtils.notEmpty(parameterType.getDefaultValue()) ? parameterType.getDefaultValue() : values[0]);
                 if (null == id && parameterType.isRequired()) {
                     return false;
                 } else {
@@ -238,19 +228,27 @@ public class TemplateCacheComponent implements Cache {
      * @param modelMap
      * @return cached path
      */
-    public String getCachedPath(String requestPath, String fullTemplatePath, Locale locale, int cacheMillisTime,
-            String[] acceptParameters, HttpServletRequest request, ModelMap modelMap) {
+    public String getCachedPath(String requestPath, String fullTemplatePath, Locale locale, int cacheMillisTime, String[] acceptParameters, HttpServletRequest request, ModelMap modelMap) {
         ModelMap model = (ModelMap) modelMap.clone();
         AbstractFreemarkerView.exposeAttribute(model, request);
         model.addAttribute(CACHE_VAR, true);
-        return createCache(requestPath, fullTemplatePath,
-                CommonUtils.joinString(fullTemplatePath, getRequestParametersString(request, acceptParameters)), locale,
-                cacheMillisTime, model);
+        return createCache(requestPath, fullTemplatePath, CommonUtils.joinString(fullTemplatePath, getRequestParametersString(request, locale, acceptParameters)), locale, cacheMillisTime, model);
     }
 
-    private static String getRequestParametersString(HttpServletRequest request, String[] acceptParameters) {
+    private static String getRequestParametersString(HttpServletRequest request, Locale locale, String[] acceptParameters) {
         StringBuilder sb = new StringBuilder();
-        sb.append("/default.html");
+        if (CommonUtils.notEmpty(locale.getLanguage())) {
+            sb.append("/default");
+            sb.append(Constants.UNDERLINE);
+            sb.append(locale.getLanguage());
+            if (CommonUtils.notEmpty(locale.getCountry())) {
+                sb.append(Constants.UNDERLINE);
+                sb.append(locale.getCountry());
+            }
+            sb.append(".html");
+        } else {
+            sb.append("/default.html");
+        }
         if (null != acceptParameters) {
             for (String parameterName : acceptParameters) {
                 String[] values = request.getParameterValues(parameterName);
@@ -281,8 +279,7 @@ public class TemplateCacheComponent implements Cache {
         deleteCachedFile(getCachedFilePath(Constants.BLANK));
     }
 
-    private String createCache(String requestPath, String fullTemplatePath, String cachePath, Locale locale, int cacheMillisTime,
-            ModelMap model) {
+    private String createCache(String requestPath, String fullTemplatePath, String cachePath, Locale locale, int cacheMillisTime, ModelMap model) {
         String cachedFilePath = getCachedFilePath(cachePath);
         String cachedtemplatePath = CommonUtils.joinString(CACHE_FILE_DIRECTORY, cachePath);
         String cachedPath = CommonUtils.joinString(WebDispatcherServlet.GLOBLE_URL_PREFIX, cachedtemplatePath);

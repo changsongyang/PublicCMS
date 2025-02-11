@@ -84,26 +84,28 @@ public class FileController {
     @PostMapping("doUpload")
     @Csrf
     @ResponseBody
-    public Map<String, Object> upload(@RequestAttribute SysSite site, @SessionAttribute SysUser user, boolean privatefile,
-            String captcha, MultipartFile file, String base64File, String originalFilename, HttpServletRequest request) {
+    public Map<String, Object> upload(@RequestAttribute SysSite site, @SessionAttribute SysUser user,
+            boolean privatefile, String captcha, MultipartFile file, String base64File, String originalFilename,
+            HttpServletRequest request) {
         ModelMap result = new ModelMap();
         result.put("success", false);
         if (CommonUtils.notEmpty(captcha)
                 || safeConfigComponent.enableCaptcha(site.getId(), SafeConfigComponent.CAPTCHA_MODULE_UPLOAD)) {
             String sessionCaptcha = (String) request.getSession().getAttribute("captcha");
             request.getSession().removeAttribute("captcha");
-            if (ControllerUtils.errorCustom("captcha.error", null == sessionCaptcha || !sessionCaptcha.equalsIgnoreCase(captcha),
-                    result)) {
+            if (ControllerUtils.errorCustom("captcha.error",
+                    null == sessionCaptcha || !sessionCaptcha.equalsIgnoreCase(captcha), result)) {
                 return result;
             }
         }
-        boolean locked = lockComponent.isLocked(site.getId(), LockComponent.ITEM_TYPE_FILEUPLOAD, String.valueOf(user.getId()),
-                null);
+        boolean locked = lockComponent.isLocked(site.getId(), LockComponent.ITEM_TYPE_FILEUPLOAD,
+                String.valueOf(user.getId()), null);
         boolean sizeLocked = lockComponent.isLocked(site.getId(),
                 privatefile ? LockComponent.ITEM_TYPE_FILEUPLOAD_PRIVATE_SIZE : LockComponent.ITEM_TYPE_FILEUPLOAD_SIZE,
                 String.valueOf(user.getId()), null);
         if (ControllerUtils.errorCustom("locked.user", locked, result)) {
-            lockComponent.lock(site.getId(), LockComponent.ITEM_TYPE_FILEUPLOAD, String.valueOf(user.getId()), null, true);
+            lockComponent.lock(site.getId(), LockComponent.ITEM_TYPE_FILEUPLOAD, String.valueOf(user.getId()), null,
+                    true);
             return result;
         } else if (ControllerUtils.errorCustom("locked.user", sizeLocked, result)) {
             return result;
@@ -117,15 +119,17 @@ public class FileController {
                 originalName = originalFilename;
             }
             String suffix = CmsFileUtils.getSuffix(originalName);
-            if (ArrayUtils.contains(privatefile ? CmsFileUtils.IMAGE_FILE_SUFFIXS : safeConfigComponent.getSafeSuffix(site),
-                    suffix)) {
+            if (ArrayUtils.contains(
+                    privatefile ? CmsFileUtils.IMAGE_FILE_SUFFIXS : safeConfigComponent.getSafeSuffix(site), suffix)) {
                 try {
                     FileUploadResult uploadResult = null;
                     if (CommonUtils.notEmpty(base64File)) {
-                        uploadResult = fileUploadComponent.upload(site.getId(), VerificationUtils.base64Decode(base64File),
-                                privatefile, suffix, localeResolver.resolveLocale(request));
+                        uploadResult = fileUploadComponent.upload(site.getId(),
+                                VerificationUtils.base64Decode(base64File), privatefile, user.getNickname(), suffix,
+                                localeResolver.resolveLocale(request));
                     } else {
-                        uploadResult = fileUploadComponent.upload(site.getId(), file, privatefile, suffix, localeResolver.resolveLocale(request));
+                        uploadResult = fileUploadComponent.upload(site.getId(), file, privatefile, user.getNickname(),
+                                suffix, localeResolver.resolveLocale(request));
                     }
                     lockComponent.lock(site.getId(),
                             privatefile ? LockComponent.ITEM_TYPE_FILEUPLOAD_PRIVATE_SIZE
@@ -136,9 +140,10 @@ public class FileController {
                     String fileType = CmsFileUtils.getFileType(suffix);
                     result.put("fileType", fileType);
                     result.put("fileSize", uploadResult.getFileSize());
-                    logUploadService.save(new LogUpload(site.getId(), user.getId(), LogLoginService.CHANNEL_WEB, originalName,
-                            privatefile, fileType, uploadResult.getFileSize(), uploadResult.getWidth(), uploadResult.getHeight(),
-                            RequestUtils.getIpAddress(request), CommonUtils.getDate(), uploadResult.getFilename()));
+                    logUploadService.save(new LogUpload(site.getId(), user.getId(), LogLoginService.CHANNEL_WEB,
+                            originalName, privatefile, fileType, uploadResult.getFileSize(), uploadResult.getWidth(),
+                            uploadResult.getHeight(), RequestUtils.getIpAddress(request), CommonUtils.getDate(),
+                            uploadResult.getFilename()));
                 } catch (IOException e) {
                     log.error(e.getMessage(), e);
                     result.put(CommonConstants.ERROR, e.getMessage());
@@ -148,8 +153,8 @@ public class FileController {
                         localeResolver.resolveLocale(request), "verify.custom.fileType"));
             }
         } else {
-            result.put(CommonConstants.ERROR,
-                    LanguagesUtils.getMessage(CommonConstants.applicationContext, localeResolver.resolveLocale(request), "verify.notEmpty.file"));
+            result.put(CommonConstants.ERROR, LanguagesUtils.getMessage(CommonConstants.applicationContext,
+                    localeResolver.resolveLocale(request), "verify.notEmpty.file"));
         }
         return result;
     }

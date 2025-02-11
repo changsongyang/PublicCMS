@@ -205,7 +205,11 @@ public class ContentConfigComponent implements SiteCache, Config {
         keywordsConfigCache.clear(false);
     }
 
-    public static class KeywordsConfig {
+    public static class KeywordsConfig implements java.io.Serializable {
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 1L;
         int max;
         String[] words;
         String[] wordWithUrls;

@@ -142,8 +142,7 @@ public class ApiController {
      * @param response
      */
     @RequestMapping("{api}")
-    public void api(@PathVariable String api, @RequestHeader(required = false) String appToken,
-            @RequestHeader(required = false) String authToken, @RequestHeader(required = false) Long authUserId,
+    public void api(@PathVariable String api, @RequestHeader(required = false) String appToken, @RequestHeader(required = false) String authToken, @RequestHeader(required = false) Long authUserId,
             HttpServletRequest request, HttpServletResponse response) {
         try {
             AbstractAppDirective directive = appDirectiveMap.get(api);
@@ -161,13 +160,11 @@ public class ApiController {
                 }
                 directive.execute(mappingJackson2HttpMessageConverter, CommonConstants.jsonMediaType, request, response);
             } else {
-                HttpParameterHandler handler = new HttpParameterHandler(mappingJackson2HttpMessageConverter,
-                        CommonConstants.jsonMediaType, request, response);
+                HttpParameterHandler handler = new HttpParameterHandler(mappingJackson2HttpMessageConverter, CommonConstants.jsonMediaType, request, response);
                 handler.put(CommonConstants.ERROR, INTERFACE_NOT_FOUND).render();
             }
         } catch (Exception e) {
-            HttpParameterHandler handler = new HttpParameterHandler(mappingJackson2HttpMessageConverter,
-                    CommonConstants.jsonMediaType, request, response);
+            HttpParameterHandler handler = new HttpParameterHandler(mappingJackson2HttpMessageConverter, CommonConstants.jsonMediaType, request, response);
             try {
                 log.error(e.getMessage(), e);
                 handler.put(CommonConstants.ERROR, e.getMessage()).render();
@@ -193,8 +190,8 @@ public class ApiController {
      */
     @PostMapping("upload")
     @ResponseBody
-    public Map<String, Object> upload(@RequestAttribute SysSite site, String appToken, String authToken, Long authUserId,
-            boolean privatefile, MultipartFile file, String base64File, String originalFilename, HttpServletRequest request) {
+    public Map<String, Object> upload(@RequestAttribute SysSite site, @RequestHeader(required = false) String appToken, @RequestHeader(required = false) String authToken,
+            @RequestHeader(required = false) Long authUserId, boolean privatefile, MultipartFile file, String base64File, String originalFilename, HttpServletRequest request) {
         ModelMap result = new ModelMap();
         result.put("result", false);
         SysUserToken sysUserToken = sysUserTokenService.getEntity(authToken);
@@ -202,26 +199,19 @@ public class ApiController {
         if (null != token && (null == token.getExpiryDate() || CommonUtils.getDate().before(token.getExpiryDate()))) {
             SysApp app = appService.getEntity(token.getAppId());
             if (app.getSiteId() == site.getId()) {
-                if (null != sysUserToken
-                        && (null == sysUserToken.getExpiryDate() || CommonUtils.getDate().before(sysUserToken.getExpiryDate()))
-                        && authUserId.equals(sysUserToken.getUserId())) {
+                if (null != sysUserToken && (null == sysUserToken.getExpiryDate() || CommonUtils.getDate().before(sysUserToken.getExpiryDate())) && authUserId.equals(sysUserToken.getUserId())) {
                     SysUser user = sysUserService.getEntity(sysUserToken.getUserId());
                     if (user.getSiteId() == site.getId() && !user.isDisabled()) {
-                        boolean locked = lockComponent.isLocked(site.getId(), LockComponent.ITEM_TYPE_FILEUPLOAD,
-                                String.valueOf(authUserId), null);
-                        boolean sizeLocked = lockComponent.isLocked(site.getId(),
-                                privatefile ? LockComponent.ITEM_TYPE_FILEUPLOAD_PRIVATE_SIZE
-                                        : LockComponent.ITEM_TYPE_FILEUPLOAD_SIZE,
+                        boolean locked = lockComponent.isLocked(site.getId(), LockComponent.ITEM_TYPE_FILEUPLOAD, String.valueOf(authUserId), null);
+                        boolean sizeLocked = lockComponent.isLocked(site.getId(), privatefile ? LockComponent.ITEM_TYPE_FILEUPLOAD_PRIVATE_SIZE : LockComponent.ITEM_TYPE_FILEUPLOAD_SIZE,
                                 String.valueOf(authUserId), null);
                         if (ControllerUtils.errorCustom("locked.user", locked, result)) {
-                            lockComponent.lock(site.getId(), LockComponent.ITEM_TYPE_FILEUPLOAD, String.valueOf(authUserId), null,
-                                    true);
+                            lockComponent.lock(site.getId(), LockComponent.ITEM_TYPE_FILEUPLOAD, String.valueOf(authUserId), null, true);
                             return result;
                         } else if (ControllerUtils.errorCustom("locked.user", sizeLocked, result)) {
                             return result;
                         }
-                        lockComponent.lock(site.getId(), LockComponent.ITEM_TYPE_FILEUPLOAD, String.valueOf(authUserId), null,
-                                true);
+                        lockComponent.lock(site.getId(), LockComponent.ITEM_TYPE_FILEUPLOAD, String.valueOf(authUserId), null, true);
                         if (null != file && !file.isEmpty() || CommonUtils.notEmpty(base64File)) {
                             String originalName;
                             if (null != file && !file.isEmpty()) {
@@ -230,32 +220,23 @@ public class ApiController {
                                 originalName = originalFilename;
                             }
                             String suffix = CmsFileUtils.getSuffix(originalName);
-                            if (ArrayUtils.contains(
-                                    privatefile ? CmsFileUtils.IMAGE_FILE_SUFFIXS : safeConfigComponent.getSafeSuffix(site),
-                                    suffix)) {
+                            if (ArrayUtils.contains(privatefile ? CmsFileUtils.IMAGE_FILE_SUFFIXS : safeConfigComponent.getSafeSuffix(site), suffix)) {
                                 try {
                                     FileUploadResult uploadResult = null;
                                     if (CommonUtils.notEmpty(base64File)) {
-                                        uploadResult = fileUploadComponent.upload(site.getId(),
-                                                VerificationUtils.base64Decode(base64File), privatefile, suffix,
-                                                localeResolver.resolveLocale(request));
+                                        uploadResult = fileUploadComponent.upload(site.getId(), VerificationUtils.base64Decode(base64File), privatefile, user.getNickname(), suffix, localeResolver.resolveLocale(request));
                                     } else {
-                                        uploadResult = fileUploadComponent.upload(site.getId(), file, privatefile, suffix,
-                                                localeResolver.resolveLocale(request));
+                                        uploadResult = fileUploadComponent.upload(site.getId(), file, privatefile, user.getNickname(), suffix, localeResolver.resolveLocale(request));
                                     }
-                                    lockComponent.lock(site.getId(),
-                                            privatefile ? LockComponent.ITEM_TYPE_FILEUPLOAD_PRIVATE_SIZE
-                                                    : LockComponent.ITEM_TYPE_FILEUPLOAD_SIZE,
+                                    lockComponent.lock(site.getId(), privatefile ? LockComponent.ITEM_TYPE_FILEUPLOAD_PRIVATE_SIZE : LockComponent.ITEM_TYPE_FILEUPLOAD_SIZE,
                                             String.valueOf(authUserId), null, (int) uploadResult.getFileSize() / 1024);
                                     result.put("result", true);
                                     result.put("fileName", uploadResult.getFilename());
                                     String fileType = CmsFileUtils.getFileType(suffix);
                                     result.put("fileType", fileType);
                                     result.put("fileSize", uploadResult.getFileSize());
-                                    logUploadService.save(new LogUpload(site.getId(), authUserId, LogLoginService.CHANNEL_WEB,
-                                            originalName, privatefile, fileType, uploadResult.getFileSize(),
-                                            uploadResult.getWidth(), uploadResult.getHeight(), RequestUtils.getIpAddress(request),
-                                            CommonUtils.getDate(), uploadResult.getFilename()));
+                                    logUploadService.save(new LogUpload(site.getId(), authUserId, LogLoginService.CHANNEL_WEB, originalName, privatefile, fileType, uploadResult.getFileSize(),
+                                            uploadResult.getWidth(), uploadResult.getHeight(), RequestUtils.getIpAddress(request), CommonUtils.getDate(), uploadResult.getFilename()));
                                 } catch (IOException e) {
                                     log.error(e.getMessage(), e);
                                     result.put(CommonConstants.ERROR, e.getMessage());

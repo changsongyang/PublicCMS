@@ -1,5 +1,6 @@
 package com.publiccms.logic.component.site;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.publiccms.common.api.FileUploader;
 import com.publiccms.common.constants.CommonConstants;
+import com.publiccms.common.constants.Constants;
 import com.publiccms.common.tools.CmsFileUtils;
 import com.publiccms.common.tools.CmsUrlUtils;
 import com.publiccms.common.tools.CommonUtils;
@@ -25,8 +27,8 @@ import com.publiccms.entities.cms.CmsContent;
 import com.publiccms.entities.cms.CmsPlace;
 import com.publiccms.entities.sys.SysSite;
 import com.publiccms.logic.component.config.ConfigDataComponent;
+import com.publiccms.logic.component.config.ImageConfigComponent;
 import com.publiccms.logic.component.config.SafeConfigComponent;
-import com.publiccms.logic.component.config.SiteConfigComponent;
 import com.publiccms.views.pojo.entities.FileUploadResult;
 
 import jakarta.annotation.Resource;
@@ -44,6 +46,8 @@ public class FileUploadComponent {
     private ConfigDataComponent configDataComponent;
     @Resource
     private SafeConfigComponent safeConfigComponent;
+    @Resource
+    private ImageConfigComponent imageConfigComponent;
 
     private List<FileUploader> uploaderList;
 
@@ -54,7 +58,8 @@ public class FileUploadComponent {
 
     public String getPrivateFileUrl(SysSite site, Integer expiryMinutes, String filepath, String filename) {
         if (null == expiryMinutes) {
-            Map<String, String> config = configDataComponent.getConfigData(site.getId(), SafeConfigComponent.CONFIG_CODE);
+            Map<String, String> config = configDataComponent.getConfigData(site.getId(),
+                    SafeConfigComponent.CONFIG_CODE);
             expiryMinutes = ConfigDataComponent.getInt(config.get(SafeConfigComponent.CONFIG_EXPIRY_MINUTES_SIGN),
                     SafeConfigComponent.DEFAULT_EXPIRY_MINUTES_SIGN);
         }
@@ -102,25 +107,56 @@ public class FileUploadComponent {
         return site.getSitePath();
     }
 
-    private FileUploadResult thumb(short siteId, FileUploadResult fileSize, String filepath, String suffix) {
+    private void thumb(short siteId, FileUploadResult fileSize, String filepath, String suffix) {
         if (fileSize.isImage() && null != fileSize.getWidth() && null != fileSize.getHeight()) {
-            Map<String, String> config = configDataComponent.getConfigData(siteId, SiteConfigComponent.CONFIG_CODE);
-            Integer maxImageWidth = ConfigDataComponent.getInt(config.get(SiteConfigComponent.CONFIG_MAX_IMAGE_WIDTH));
-            if (null != maxImageWidth && maxImageWidth > fileSize.getWidth()) {
+            Map<String, String> config = configDataComponent.getConfigData(siteId, ImageConfigComponent.CONFIG_CODE);
+            Integer maxImageWidth = ConfigDataComponent.getInt(config.get(ImageConfigComponent.CONFIG_MAX_IMAGE_WIDTH));
+            if (null != maxImageWidth && maxImageWidth < fileSize.getWidth()) {
                 int height = fileSize.getHeight() * maxImageWidth / fileSize.getWidth();
                 try {
                     ImageUtils.thumb(filepath, filepath, maxImageWidth, height, suffix);
                     fileSize.setWidth(maxImageWidth);
                     fileSize.setHeight(height);
+                    fileSize.setFileSize(new File(filepath).length());
                 } catch (IOException e) {
                 }
             }
         }
-        return fileSize;
     }
 
-    public FileUploadResult upload(short siteId, MultipartFile file, boolean privatefile, String suffix, Locale locale)
-            throws IOException {
+    private void watermark(short siteId, String nickname, FileUploadResult fileSize, String filepath, String suffix) {
+        if (fileSize.isImage() && null != fileSize.getWidth() && null != fileSize.getHeight()) {
+            Map<String, String> config = configDataComponent.getConfigData(siteId, ImageConfigComponent.CONFIG_CODE);
+            String watermarkImage = config.get(ImageConfigComponent.CONFIG_WATERMARK_IMAGE);
+            boolean useNickname = ConfigDataComponent
+                    .getBoolean(config.get(ImageConfigComponent.CONFIG_WATERMARK_USE_NICKNAME), false);
+            String text = config.get(ImageConfigComponent.CONFIG_WATERMARK_TEXT);
+            if (CommonUtils.notEmpty(watermarkImage) || CommonUtils.notEmpty(text) || useNickname) {
+                if (CommonUtils.notEmpty(watermarkImage)) {
+                    watermarkImage = siteComponent.getPrivateFilePath(siteId, watermarkImage);
+                }
+                String font = config.get(ImageConfigComponent.CONFIG_WATERMARK_TEXT_FONT);
+                String color = config.get(ImageConfigComponent.CONFIG_WATERMARK_TEXT_COLOR);
+                int fontsize = ConfigDataComponent.getInt(
+                        config.get(ImageConfigComponent.CONFIG_WATERMARK_TEXT_FONTSIZE),
+                        ImageConfigComponent.DEFAULT_FONTSIZE);
+                float alpha = ConfigDataComponent.getFloat(config.get(ImageConfigComponent.CONFIG_WATERMARK_ALPHA),
+                        ImageConfigComponent.DEFAULT_ALPHA);
+                String position = config.get(ImageConfigComponent.CONFIG_WATERMARK_POSITION);
+                try {
+                    String textAndNickname = CommonUtils.empty(text) ? nickname
+                            : CommonUtils.joinString(text, Constants.BLANK_SPACE, nickname);
+                    ImageUtils.watermark(filepath, watermarkImage, useNickname ? textAndNickname : text, color, font,
+                            fontsize, alpha, position, suffix);
+                    fileSize.setFileSize(new File(filepath).length());
+                } catch (IOException e) {
+                }
+            }
+        }
+    }
+
+    public FileUploadResult upload(short siteId, MultipartFile file, boolean privatefile, String nickname,
+            String suffix, Locale locale) throws IOException {
         String fileName = CmsFileUtils.getUploadFileName(suffix);
         if (CommonUtils.notEmpty(uploaderList)) {
             for (FileUploader fileUploader : uploaderList) {
@@ -134,7 +170,9 @@ public class FileUploadComponent {
         Path path = CmsFileUtils.upload(file, filepath);
         if (CmsFileUtils.isSafe(filepath, suffix)) {
             FileUploadResult fileSize = CmsFileUtils.getFileSize(filepath, fileName, suffix);
-            return thumb(siteId, fileSize, filepath, suffix);
+            thumb(siteId, fileSize, filepath, suffix);
+            watermark(siteId, nickname, fileSize, filepath, suffix);
+            return fileSize;
         } else {
             Files.delete(path);
             throw new IOException(
@@ -142,8 +180,8 @@ public class FileUploadComponent {
         }
     }
 
-    public FileUploadResult upload(short siteId, byte[] file, boolean privatefile, String suffix, Locale locale)
-            throws IOException {
+    public FileUploadResult upload(short siteId, byte[] file, boolean privatefile, String nickname, String suffix,
+            Locale locale) throws IOException {
         String fileName = CmsFileUtils.getUploadFileName(suffix);
         if (CommonUtils.notEmpty(uploaderList)) {
             for (FileUploader fileUploader : uploaderList) {
@@ -157,7 +195,9 @@ public class FileUploadComponent {
         CmsFileUtils.upload(file, filepath);
         if (CmsFileUtils.isSafe(filepath, suffix)) {
             FileUploadResult fileSize = CmsFileUtils.getFileSize(filepath, fileName, suffix);
-            return thumb(siteId, fileSize, filepath, suffix);
+            thumb(siteId, fileSize, filepath, suffix);
+            watermark(siteId, nickname, fileSize, filepath, suffix);
+            return fileSize;
         } else {
             throw new IOException(
                     LanguagesUtils.getMessage(CommonConstants.applicationContext, locale, "verify.custom.file.unsafe"));

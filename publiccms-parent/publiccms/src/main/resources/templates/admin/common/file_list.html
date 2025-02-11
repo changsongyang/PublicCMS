@@ -19,7 +19,7 @@
                 <#elseif !fileTypes?has_content || fileTypes = t.fileType(a.fileName)>
                     <#if fileTypes?has_content && fileTypes = 'image'>
                         <img src="${site.sitePath+filePath}" alt="${a.fileName}" title="${a.fileName}(<@t.fileSize a.size/>)">
-                        <a href="javascript:;" class="edit-icon" onclick="$('.tabImageBtn',$.pdialog.getCurrent()).click();$('div.upload-wrap', $.pdialog.getCurrent()).editImg({imgUrl:'${site.sitePath+filePath!}',imgName:'${a.fileName!}'});return false;"></a>
+                        <a href="javascript:;" class="edit-icon" onclick="$('.tabImageBtn',$.pdialog.getCurrent()).trigger('click');$('div.upload-wrap', $.pdialog.getCurrent()).editImg({imgUrl:'${site.sitePath+filePath!}',imgName:'${a.fileName!}'});return false;"></a>
                     <#else>
                         <i class="thumb icon-file-alt icon-large"></i>
                     </#if>

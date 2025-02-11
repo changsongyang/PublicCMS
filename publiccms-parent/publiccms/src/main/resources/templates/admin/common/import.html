@@ -46,7 +46,7 @@ $(".pageFormContent",$.pdialog.getCurrent()).on("change","input[type=file]",func
         var filenames=$(this)[0].files[0].name.toLowerCase().split('.');
         if('pdf' == filenames[filenames.length-1]){
             $('.iframe',$.pdialog.getCurrent()).show();
-            $('input[name=useIframe]',$.pdialog.getCurrent()).click();
+            $('input[name=useIframe]',$.pdialog.getCurrent()).trigger("click");
         } else {
             $('.iframe',$.pdialog.getCurrent()).hide();
         }
@@ -57,7 +57,7 @@ $(".pageFormContent",$.pdialog.getCurrent()).on("change","input[type=file]",func
         }
     }
 });
-$('input[name=useIframe]',$.pdialog.getCurrent()).click(function(){
+$('input[name=useIframe]',$.pdialog.getCurrent()).on("click", function(){
     if($(this).is(':checked')) {
         $('.iframeSize',$.pdialog.getCurrent()).show();
         $('.iframeSize input[data-required=true]',navTab.getCurrentPanel()).addClass('required');

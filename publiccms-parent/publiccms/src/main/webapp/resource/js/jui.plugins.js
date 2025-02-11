@@ -231,6 +231,34 @@ JUI.regPlugins.push(function($p){
 });
 
 JUI.regPlugins.push(function($p){
+    $("input.preview", $p).each(function(){
+        var $input=$(this);
+        var $preview = $("<div class=\"image-preview hide\"><div class=\"image-box\"><img/></div></div>").insertBefore($input);
+        $input.on("mouseover mouseout",function(event){
+            if(event.type == "mouseover"){
+                var $this=$(this);
+                var filenames=$this.val().toLowerCase().split('.');
+                if(0 < filenames.length && -1 != $.inArray(filenames[filenames.length-1], ["png","gif","jpg","jpeg","svg","bmp"])){
+                    if(-1<$this.val().indexOf("://")||0==$this.val().indexOf("//")){
+                        $preview.show().find('img').attr('src',$this.val());
+                    } else if($this.data("prefix")){
+                        if(0 < $this.data("prefix").indexOf("?")){
+                            $preview.show().find('img').attr('src',$this.data("prefix")+encodeURIComponent($this.val()));
+                        }else{
+                            $preview.show().find('img').attr('src',$this.data("prefix")+$this.val());
+                        }
+                    } else {
+                        $preview.show().find('img').attr('src',window.FILE_UPLOAD_PREFIX+$this.val());
+                    }
+                }
+            }else if(event.type == "mouseout"){
+                $preview.hide();
+            }
+        });
+    });
+});
+
+JUI.regPlugins.push(function($p){
     function initDictionary($dictionary,$exclude,url){
         var valuearray=[];
         $dictionary.find("select,input[checked]").each(function(){

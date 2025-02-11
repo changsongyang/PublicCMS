@@ -216,7 +216,7 @@ public class SafeConfigComponent implements Config {
         String fixedUrl = url.substring(url.indexOf("://") + 1);
         return !(url.startsWith(site.getDynamicPath()) || url.startsWith(site.getSitePath())
                 || fixedUrl.startsWith(site.getDynamicPath()) || fixedUrl.startsWith(site.getSitePath())
-                || url.startsWith(CommonUtils.joinString(contextPath, "/")));
+                || CommonUtils.notEmpty(contextPath) && url.startsWith(CommonUtils.joinString(contextPath, "/")));
     }
 
     @Override

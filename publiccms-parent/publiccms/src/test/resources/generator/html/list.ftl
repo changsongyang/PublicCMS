@@ -42,7 +42,7 @@ ${"<@_"+entityName?replace('Cms','')?uncap_first+"List"} <#include "../include_c
         ${'</#'}if>
         </ul>
     </div>
-    <table class="table" layoutH orderField="${orderField!}" orderType="${orderType!}">
+    <table class="table" width="100%" layoutH orderField="${orderField!}" orderType="${orderType!}">
         <thead>
             <tr>
                 <th width="20"><input type="checkbox" group="ids" class="checkboxCtrl"></th>

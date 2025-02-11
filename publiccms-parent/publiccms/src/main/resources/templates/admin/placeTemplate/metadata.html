@@ -134,7 +134,7 @@
                 <@extends 'metadataExtendList' metadataExtendList/>
             </fieldset>
     <script>
-    $('input[name=allowContribute]',navTab.getCurrentPanel()).click(function(){
+    $('input[name=allowContribute]',navTab.getCurrentPanel()).on("click", function(){
         if($(this).is(':checked')) {
             $('.allowContribute',navTab.getCurrentPanel()).show();
         } else {
@@ -144,7 +144,7 @@
     $('.systemField dt [type=checkbox]',navTab.getCurrentPanel()).each(function(){
         var box = $(this).parent().parent().parent();
         box.find('dd').hide();
-        $(this).click(function(){
+        $(this).on("click", function(){
             if( $(this).is(':checked') ) {
                 box.find('dd').show().find('input[type=text]').addClass('required');
             } else {
@@ -153,16 +153,16 @@
         });
     });
     <#if a?has_content&&a.allowContribute>
-        $('input[name=allowContribute]',navTab.getCurrentPanel()).click();
+        $('input[name=allowContribute]',navTab.getCurrentPanel()).trigger("click");
     </#if>
     <#if (a.fieldList)?has_content>
     <#list a.fieldList as field>
-        $('input[name=fieldList][value=${field}]',navTab.getCurrentPanel()).click();
+        $('input[name=fieldList][value=${field}]',navTab.getCurrentPanel()).trigger("click");
     </#list>
     </#if>
     <#if (a.requiredFieldList)?has_content>
     <#list a.requiredFieldList as field>
-        $('input[name=requiredFieldList][value=${field}]',navTab.getCurrentPanel()).click();
+        $('input[name=requiredFieldList][value=${field}]',navTab.getCurrentPanel()).trigger("click");
     </#list>
     </#if>
     $('input[name=size]',navTab.getCurrentPanel()).on('change',function(){

@@ -39,11 +39,9 @@
             <dl class="nowrap">
                 <dt><@t.page 'cover'/>:</dt>
                 <dd>
-                    <input name="cover" value="${(a.cover)!}" maxlength="300" size="50" type="text"/>
+                    <input name="cover" value="${(a.cover)!}" class="preview" maxlength="300" size="50" type="text"/>
                     <a class="btnAttach" href="common/upload.html?field=cover&fileTypes=image" lookupGroup="" width="1000" height="600"><@t.page 'cover'/></a>
                     <a class="view icon-eye-open" ref="cover" data-prefix="${getFileUploadPrefix()}" href="javascript:void(0);" target="_blank"><@t.page 'button.view'/></a>
-                    <#include "../include_page/preview.html"/>
-                    <@preview 'module' 'input[name=cover]'/>
                 </dd>
             </dl>
             <dl class="nowrap">
@@ -86,7 +84,7 @@
             });
             <#if (a.place)?has_content>$('input[name=place]',navTab.getCurrentPanel()).trigger("change");</#if>
             <#if (a.fragment)?has_content>$('input[name=fragment]',navTab.getCurrentPanel()).trigger("change");</#if>
-            $('input[name=clone]',navTab.getCurrentPanel()).click(function(){
+            $('input[name=clone]',navTab.getCurrentPanel()).on("click", function(){
                 if($(this).is(':checked')) {
                     $('.clone',navTab.getCurrentPanel()).show();
                     $('.clone input[type=text]',navTab.getCurrentPanel()).addClass('required');
@@ -96,7 +94,7 @@
                 }
             });
             <#if (a.clone)?has_content && a.clone>
-                $('input[name=clone]',navTab.getCurrentPanel()).click();
+                $('input[name=clone]',navTab.getCurrentPanel()).trigger("click");
             </#if>
             </script>
         </div>

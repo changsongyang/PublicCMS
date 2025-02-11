@@ -18,7 +18,7 @@
     </ul>
 </div>
 <script>
-$('ul li a',$.pdialog.getCurrent()).click(function(){
+$('ul li a',$.pdialog.getCurrent()).on("click", function(){
     $.pdialog.closeCurrent();
 });
 </script>

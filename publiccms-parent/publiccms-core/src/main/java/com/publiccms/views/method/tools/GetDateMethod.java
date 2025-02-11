@@ -19,7 +19,7 @@ import freemarker.template.TemplateModelException;
  * <p>
  * 参数列表
  * <ol>
- * <li>日期类型【thisSunday:本周日,thisMonday:本周一,lastMonday:上周一,lastSunday:上周日,nextMonday:下周一,nextSunday:下周日】,默认当前时间
+ * <li>日期类型【yesterday:昨天,tomorrow:明天,thisSunday:本周日,thisMonday:本周一,lastMonday:上周一,lastSunday:上周日,lastMonth:上个月,lastYear:去年,nextMonday:下周一,nextSunday:下周日,nextMonth:下个月,nextYear:明年】,默认当前时间
  * <li>日期,【2020-01-01 23:59:59】,【2020-01-01】,为空则取当前日期
  * </ol>
  * <p>
@@ -54,6 +54,12 @@ public class GetDateMethod extends BaseMethod {
         if (!arguments.isEmpty()) {
             String type = getString(0, arguments);
             switch (type) {
+            case "yesterday":
+                date = DateUtils.addDays(date, -1);
+                break;
+            case "tomorrow":
+                date = DateUtils.addDays(date, 1);
+                break;
             case "thisSunday":
                 date = getThisSunday(date);
                 break;
@@ -66,11 +72,22 @@ public class GetDateMethod extends BaseMethod {
             case "lastSunday":
                 date = getLastSunday(date);
                 break;
+            case "lastMonth":
+                date = DateUtils.addMonths(date, -1);
+            case "lastYear":
+                date = DateUtils.addYears(date, -1);
+                break;
             case "nextMonday":
-                date = getLastMonday(date);
+                date = getNextMonday(date);
                 break;
             case "nextSunday":
-                date = getLastSunday(date);
+                date = getNextSunday(date);
+                break;
+            case "nextMonth":
+                date = DateUtils.addMonths(date, 1);
+                break;
+            case "nextYear":
+                date = DateUtils.addYears(date, 1);
                 break;
             default:
             }

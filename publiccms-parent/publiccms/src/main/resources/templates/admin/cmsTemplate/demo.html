@@ -73,7 +73,7 @@
     </ul>
 </div>
 <script>
-$('ul li a',$.pdialog.getCurrent()).click(function(){
+$('ul li a',$.pdialog.getCurrent()).on("click", function(){
     if($(this).attr('href')!='javascript:;'){
         $.pdialog.closeCurrent();
     }

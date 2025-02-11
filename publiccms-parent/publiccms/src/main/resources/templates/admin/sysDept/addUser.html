@@ -57,11 +57,9 @@
             <dl class="nowrap">
                 <dt><@t.page 'cover'/>:</dt>
                 <dd>
-                    <input name="cover" value="${(a.cover)!}" maxlength="300" size="50" type="text"/>
+                    <input name="cover" class="preview" value="${(a.cover)!}" maxlength="300" size="50" type="text"/>
                     <a class="btnAttach" href="common/upload.html?field=cover&fileTypes=image" lookupGroup="" width="1000" height="600"><@t.page 'cover'/></a>
                     <a class="view icon-eye-open" ref="cover" href="javascript:void(0);" target="_blank"><@t.page 'button.view'/></a>
-                    <#include "../include_page/preview.html"/>
-                    <@preview 'user' 'input[name=cover]'/>
                 </dd>
             </dl>
         </#if>
@@ -80,7 +78,7 @@
                 </ul>
             </fieldset>
     <script>
-    $('input[name=superuser]',navTab.getCurrentPanel()).click(function(){
+    $('input[name=superuser]',navTab.getCurrentPanel()).on("click", function(){
         if($(this).is(':checked')) {
             $('.superuser',navTab.getCurrentPanel()).show();
         } else {
@@ -88,7 +86,7 @@
         }
     });
 <#if a?has_content&&a.superuser>
-    $('input[name=superuser]',navTab.getCurrentPanel()).click();
+    $('input[name=superuser]',navTab.getCurrentPanel()).trigger("click");
     <#if a.roles?has_content>
         <#list a.roles?split(',') as role>
             if($('.tree li a[tname=roleIds][tvalue=${role?js_string}]',navTab.getCurrentPanel()).length) {

@@ -19,6 +19,7 @@ import com.publiccms.logic.component.site.VisitComponent;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("visit")
@@ -38,12 +39,13 @@ public class VisitController {
      * @param itemType
      * @param itemId
      * @param request
+     * @param response 
      */
     @RequestMapping("record")
     @ResponseBody
     public void recordData(@RequestAttribute SysSite site, String sessionId, String url, String title, Integer screenw,
             Integer screenh, @RequestHeader(value = "User-Agent", required = false) String userAgent, String referer,
-            String itemType, String itemId, HttpServletRequest request) {
+            String itemType, String itemId, HttpServletRequest request, HttpServletResponse response) {
         Calendar now = Calendar.getInstance();
         Date date = now.getTime();
         Long userId = null;
@@ -60,5 +62,6 @@ public class VisitController {
         VisitHistory entity = new VisitHistory(site.getId(), sessionId, date, (byte) now.get(Calendar.HOUR_OF_DAY), userId,
                 RequestUtils.getIpAddress(request), userAgent, url, title, screenw, screenh, referer, itemType, itemId, date);
         visitComponent.add(entity);
+        response.setContentType("application/javascript");
     }
 }

@@ -77,7 +77,7 @@ header .navbar-toggler.side-right{background-image:url(../images/side-right.png)
 #splitBar,#splitBarProxy{top:50px;}
 
 /* Accordion */
-.accordion{display:block;}
+.accordion{display:block;margin-bottom:50px;}
 .accordion .accordionHeader{display:block;overflow:hidden;cursor:pointer;}
 .accordion .accordionHeader h2{display:block;overflow:hidden;padding:0 10px 0 10px;height:40px;line-height:40px;font-weight:400;}
 .accordion .accordionHeader h2>i{display:inline-block;margin-left:5px;margin-right:5px;text-align:center;width:20px;}
@@ -236,7 +236,9 @@ textarea.editor,textarea.code{width:100%;min-height:400px;opacity:0.4;}
 input.gray, textarea.gray{color:gray;}
 select{border:1px solid;border-color:#A2BAC0 #B8D0D6 #B8D0D6 #A2BAC0;}
 textarea{max-width:100%;}
-
+.image-preview{position:relative;width:1px;}
+.image-preview .image-box{position:absolute;margin-top:-30px;bottom:0;left:0;z-index:9999;}
+.image-preview .image-box img{max-height:400px;max-width:500px;}
 span.error{display:block;overflow:hidden;width:165px;height:28px;padding:0 3px;line-height:28px;background:#F00;color:#FFF;}
 
 /* Button */
@@ -435,7 +437,7 @@ a.btnUp:before,a.btnDown:before{line-height:14px;}
 .image-list p{float:none;position:absolute;bottom:0px;margin:0px;overflow:hidden;width:100%;min-width:100%;height:30px;line-height:15px;padding:unset;word-break:break-all;}
 
 /* calendar */
-#calendar{margin:0;width:230px;z-index:1001;position:absolute;border-width:1px;border-style:solid;display:none;}
+#calendar{margin:0;width:230px;z-index:2001;position:absolute;border-width:1px;border-style:solid;display:none;}
 #calendar *{margin:0;padding:0;font-size:14px;line-height:18px;}
 #calendar .main{margin:auto;text-align:center;zoom:1;position:relative;}
 #calendar .head{padding:6px 0;}

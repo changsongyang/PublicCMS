@@ -2099,7 +2099,7 @@ $('input[name=name]',$.pdialog.getCurrent()).keyup('keyup change',function(){
         $('.icons label',$.pdialog.getCurrent()).show();
     }
 });
-$('.icons a',$.pdialog.getCurrent()).click(function(){
+$('.icons a',$.pdialog.getCurrent()).on("click", function(){
     $.bringBack({'${field}':$('i',$(this)).prop("className").replace(' icon-large','')});
     return false;
 });

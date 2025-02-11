@@ -18,7 +18,7 @@ import jakarta.annotation.Resource;
  * <p>
  * 参数列表
  * <ul>
- * <li><code>command</code>:命令【sync.bat,sync.sh,backupdb.bat,backupdb.sh】
+ * <li><code>command</code>:命令【sync.bat,sync.sh,backupDB.bat,backupDB.sh】
  * <li><code>parameters</code>:参数数组
  * </ul>
  * <p>
@@ -27,15 +27,15 @@ import jakarta.annotation.Resource;
  * 使用示例
  * <p>
  * &lt;@tools.executeScript command='backupdb.bat'/&gt;
- * 
+ *
  * <pre>
 &lt;script&gt;
- $.getJSON('${site.dynamicPath}api/directive/tools/executeScript?command=backupdb.bat&amp;appToken=接口访问授权Token', function(data){    
+ $.getJSON('${site.dynamicPath}api/directive/tools/executeScript?command=backupdb.bat&amp;appToken=接口访问授权Token', function(data){
    console.log(data.id);
  });
  &lt;/script&gt;
  * </pre>
- * 
+ *
  */
 @Component
 public class ExecuteScriptDirective extends AbstractTemplateDirective {

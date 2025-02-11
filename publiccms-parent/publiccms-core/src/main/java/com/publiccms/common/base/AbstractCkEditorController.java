@@ -54,7 +54,7 @@ public class AbstractCkEditorController {
             String suffix = CmsFileUtils.getSuffix(originalName);
             if (ArrayUtils.contains(safeConfigComponent.getSafeSuffix(site), suffix)) {
                 try {
-                    FileUploadResult uploadResult = fileUploadComponent.upload(site.getId(), upload, false, suffix,
+                    FileUploadResult uploadResult = fileUploadComponent.upload(site.getId(), upload, false, user.getNickname(), suffix,
                             localeResolver.resolveLocale(request));
                     logUploadService.save(new LogUpload(site.getId(), user.getId(), channel, originalName, false,
                             CmsFileUtils.getFileType(suffix), upload.getSize(), uploadResult.getWidth(), uploadResult.getHeight(),

@@ -62,10 +62,6 @@ public class SiteConfigComponent implements Config {
      */
     public static final String CONFIG_CATEGORY_PATH = "category_path";
     /**
-     * max image width
-     */
-    public static final String CONFIG_MAX_IMAGE_WIDTH = "max_image_width";
-    /**
      * comment need check
      */
     public static final String CONFIG_COMMENT_NEED_CHECK = "comment_need_check";
@@ -135,10 +131,6 @@ public class SiteConfigComponent implements Config {
         extendFieldList.add(new SysExtendField(CONFIG_CATEGORY_PATH, INPUTTYPE_CATEGORY_PATH, true,
                 getMessage(locale, CommonUtils.joinString(CONFIG_CODE_DESCRIPTION, Constants.DOT, CONFIG_CATEGORY_PATH)), null,
                 site.isUseStatic() ? "category/${category.code}.html" : "content/category.html?id=${category.id}"));
-
-        extendFieldList.add(new SysExtendField(CONFIG_MAX_IMAGE_WIDTH, INPUTTYPE_NUMBER,
-                getMessage(locale, CommonUtils.joinString(CONFIG_CODE_DESCRIPTION, Constants.DOT, CONFIG_MAX_IMAGE_WIDTH)),
-                null));
 
         extendFieldList.add(new SysExtendField(CONFIG_DEFAULT_CONTENT_STATUS, INPUTTYPE_CONTENT_STATUS, true,
                 getMessage(locale, CommonUtils.joinString(CONFIG_CODE_DESCRIPTION, Constants.DOT, CONFIG_DEFAULT_CONTENT_STATUS)),

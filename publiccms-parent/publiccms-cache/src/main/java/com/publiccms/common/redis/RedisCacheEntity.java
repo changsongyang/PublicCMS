@@ -34,7 +34,7 @@ public class RedisCacheEntity<K, V> implements CacheEntity<K, V>, java.io.Serial
     private static final StringSerializer stringSerializer = new StringSerializer();
     private final Serializer<V> valueSerializer = new ValueSerializer<>();
 
-    public static final String CACHE_PREFIX = "cms.";
+    public static final String CACHE_PREFIX = "cms2025.";
 
     @Override
     public List<V> put(K key, V value) {

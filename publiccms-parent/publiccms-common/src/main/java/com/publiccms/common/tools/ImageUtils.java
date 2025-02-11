@@ -1,5 +1,6 @@
 package com.publiccms.common.tools;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -97,8 +98,9 @@ public class ImageUtils {
      * 
      * <pre>
      * &#64;PostMapping("doLogin")
-     * public String login(@RequestAttribute SysSite site, HttpSession session, String username, String password, String captcha,
-     *         String returnUrl, Long clientId, String uuid, HttpServletRequest request, ModelMap model) {
+     * public String login(@RequestAttribute SysSite site, HttpSession session, String username, String password,
+     *         String captcha, String returnUrl, Long clientId, String uuid, HttpServletRequest request,
+     *         ModelMap model) {
      *     String sessionCaptcha = (String) session.getAttribute("captcha");
      *     session.removeAttribute("captcha");
      *     if (null != sessionCaptcha &amp;&amp; sessionCaptcha.equalsIgnoreCase(captcha)) {
@@ -128,7 +130,8 @@ public class ImageUtils {
             for (int i = 0; i < text.length(); i++) {
                 AffineTransform saveAT = g.getTransform();
                 AffineTransform affine = new AffineTransform();
-                affine.setToRotation(Math.PI / 4 * Constants.random.nextDouble() * (Constants.random.nextBoolean() ? 1 : -1),
+                affine.setToRotation(
+                        Math.PI / 4 * Constants.random.nextDouble() * (Constants.random.nextBoolean() ? 1 : -1),
                         i * fontWidth + 3, height / 2);
                 g.setTransform(affine);
                 g.setFont(font1);
@@ -144,11 +147,12 @@ public class ImageUtils {
             }
             g.setColor(getRandColor(160, 250));
             for (int i = 0; i < 10; i++) {
-                g.drawLine(Constants.random.nextInt(width), Constants.random.nextInt(height), Constants.random.nextInt(width),
-                        Constants.random.nextInt(height));
+                g.drawLine(Constants.random.nextInt(width), Constants.random.nextInt(height),
+                        Constants.random.nextInt(width), Constants.random.nextInt(height));
             }
             shearX(g, width, height, Color.white);
         }
+        g.dispose();
         ImageIO.write(bufferedImage, FORMAT_NAME_PNG, outputStream);
     }
 
@@ -170,7 +174,8 @@ public class ImageUtils {
             fc = 255;
         }
         int rc = (bc > 255 ? 255 : bc) - fc;
-        return new Color(fc + Constants.random.nextInt(rc), fc + Constants.random.nextInt(rc), fc + Constants.random.nextInt(rc));
+        return new Color(fc + Constants.random.nextInt(rc), fc + Constants.random.nextInt(rc),
+                fc + Constants.random.nextInt(rc));
     }
 
     private static Font getFont(int size) {
@@ -219,8 +224,8 @@ public class ImageUtils {
         safeElementsList.add("font-face");
         List<String> safeAttributesList = new ArrayList<>();
         safeAttributesList.add("horiz-adv-x");
-        SvgSecurityValidator svgSecurityValidator = SvgSecurityValidator.builder().withAdditionalElements(safeElementsList)
-                .withAdditionalAttributes(safeAttributesList).build();
+        SvgSecurityValidator svgSecurityValidator = SvgSecurityValidator.builder()
+                .withAdditionalElements(safeElementsList).withAdditionalAttributes(safeAttributesList).build();
         ValidationResult validation;
         validation = svgSecurityValidator.validate(FileUtils.readFileToString(imageFile, StandardCharsets.UTF_8));
         if (validation.hasViolations()) {
@@ -237,11 +242,12 @@ public class ImageUtils {
         Image scaledImage = sourceImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
         Graphics2D g = resultImage.createGraphics();
         if (png) {
-            resultImage = g.getDeviceConfiguration().createCompatibleImage(resultImage.getWidth(), resultImage.getHeight(),
-                    Transparency.TRANSLUCENT);
+            resultImage = g.getDeviceConfiguration().createCompatibleImage(resultImage.getWidth(),
+                    resultImage.getHeight(), Transparency.TRANSLUCENT);
             g = resultImage.createGraphics();
         }
         g.drawImage(scaledImage, 0, 0, null);
+        g.dispose();
         return resultImage;
     }
 
@@ -262,5 +268,113 @@ public class ImageUtils {
                 ImageIO.write(resultImage, DEFAULT_FORMAT_NAME, outputStream);
             }
         }
+    }
+
+    public static void watermark(String sourceFilePath, String watermarkFilePath, String watermarkText, String color,
+            String font, int fontsize, float alpha, String position, String suffix) throws IOException {
+        if (CommonUtils.notEmpty(watermarkFilePath) || CommonUtils.notEmpty(watermarkText)) {
+            BufferedImage sourceImage = ImageIO.read(new File(sourceFilePath));
+            Graphics2D g = sourceImage.createGraphics();
+            int fontWidth = 0;
+            int fontHeight = 0;
+            int watermarkWidth = 0;
+            int watermarkHeight = 0;
+
+            BufferedImage watermarkImage = null;
+            if (CommonUtils.notEmpty(watermarkFilePath)) {
+                watermarkImage = ImageIO.read(new File(watermarkFilePath));
+                watermarkWidth = watermarkImage.getWidth();
+                watermarkHeight = watermarkImage.getHeight();
+            }
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP, alpha));
+            if (CommonUtils.notEmpty(watermarkText)) {
+                if (CommonUtils.notEmpty(color)) {
+                    g.setColor(Color.decode(color));
+                }
+                if (CommonUtils.notEmpty(font)) {
+                    g.setFont(new Font(font, Font.PLAIN, fontsize));
+                }
+                fontWidth = g.getFontMetrics().charsWidth(watermarkText.toCharArray(), 0, watermarkText.length());
+                fontHeight = g.getFontMetrics().getHeight();
+                if (fontWidth < sourceImage.getWidth() - 10 && fontHeight < sourceImage.getHeight() - 10) {
+                    g.drawString(watermarkText,
+                            matermarkPosition(position, sourceImage.getWidth(), sourceImage.getHeight(), watermarkWidth,
+                                    watermarkHeight, fontWidth, fontHeight, true, true),
+                            matermarkPosition(position, sourceImage.getWidth(), sourceImage.getHeight(), watermarkWidth,
+                                    watermarkHeight, fontWidth, fontHeight, false, true));
+                }
+            }
+            if (null != watermarkImage && (watermarkWidth < sourceImage.getWidth() - 10
+                    && watermarkHeight < sourceImage.getHeight() - 10)) {
+                g.drawImage(watermarkImage,
+                        matermarkPosition(position, sourceImage.getWidth(), sourceImage.getHeight(), watermarkWidth,
+                                watermarkHeight, fontWidth, fontHeight, true, false),
+                        matermarkPosition(position, sourceImage.getWidth(), sourceImage.getHeight(), watermarkWidth,
+                                watermarkHeight, fontWidth, fontHeight, false, false),
+                        watermarkWidth, watermarkHeight, null);
+
+            }
+            try (FileOutputStream outputStream = new FileOutputStream(sourceFilePath)) {
+                g.dispose();
+                if (null != suffix && suffix.length() > 1) {
+                    ImageIO.write(sourceImage, suffix.substring(1), outputStream);
+                } else {
+                    ImageIO.write(sourceImage, DEFAULT_FORMAT_NAME, outputStream);
+                }
+            }
+        }
+    }
+
+    private static int matermarkPosition(String position, int width, int height, int watermarkWidth,
+            int watermarkHeight, int textWidth, int textHeight, boolean x, boolean text) {
+        int result = 0;
+        int between = (0 == watermarkWidth || 0 == textWidth) ? 0 : 10;
+        int boxHeight = watermarkHeight > textHeight ? watermarkHeight : textHeight;
+        switch (position) {
+        case "center":
+            if (x) {
+                result = (width - watermarkWidth - textWidth - between) / 2;
+            } else {
+                result = (height - boxHeight) / 2;
+            }
+            break;
+        case "leftTop":
+            result = 10;
+            break;
+        case "leftBottom":
+            if (x) {
+                result = 10;
+            } else {
+                result = height - boxHeight - 10;
+            }
+            break;
+        case "rightTop":
+            if (x) {
+                result = width - watermarkWidth - textWidth - between - 10;
+            } else {
+                result = 10;
+            }
+            break;
+        case "rightBottom":
+        default:
+            if (x) {
+                result = width - watermarkWidth - textWidth - between - 10;
+            } else {
+                result = height - boxHeight - 10;
+            }
+        }
+
+        if (text) {
+            if (x) {
+                result += watermarkWidth + between;
+            } else {
+                if (watermarkHeight > textHeight) {
+                    result += (watermarkHeight - textHeight) / 2;
+                }
+                result += textHeight;
+            }
+        }
+        return result;
+
     }
 }

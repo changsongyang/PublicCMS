@@ -134,7 +134,7 @@ function navTabAjaxDone(json) {
         } else { // 重新载入当前navTab页面
             var $pagerForm = $(".pagerForm", navTab.getCurrentPanel());
             if(0!=$pagerForm.length){
-                $pagerForm.submit();
+                $pagerForm.trigger("submit");
             }
         }
         if ("closeCurrent" == json.callbackType ) {
@@ -177,7 +177,7 @@ function dialogAjaxDone(json) {
             var $panel = navTab.getCurrentPanel();
             var $pagerForm = $(".pagerForm", navTab.getCurrentPanel());
             if(0!=$pagerForm.length){
-                $pagerForm.submit();
+                $pagerForm.trigger("submit");
             }
         }
         if ("closeCurrent" == json.callbackType ) {

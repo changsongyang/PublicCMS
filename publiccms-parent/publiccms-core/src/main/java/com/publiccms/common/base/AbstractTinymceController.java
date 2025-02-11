@@ -63,7 +63,7 @@ public class AbstractTinymceController {
             String suffix = CmsFileUtils.getSuffix(originalName);
             if (ArrayUtils.contains(safeConfigComponent.getSafeSuffix(site), suffix)) {
                 try {
-                    FileUploadResult uploadResult = fileUploadComponent.upload(site.getId(), file, false, suffix,
+                    FileUploadResult uploadResult = fileUploadComponent.upload(site.getId(), file, false, user.getNickname(), suffix,
                             localeResolver.resolveLocale(request));
                     logUploadService.save(new LogUpload(site.getId(), user.getId(), channel, originalName, false,
                             CmsFileUtils.getFileType(suffix), file.getSize(), uploadResult.getWidth(), uploadResult.getHeight(),

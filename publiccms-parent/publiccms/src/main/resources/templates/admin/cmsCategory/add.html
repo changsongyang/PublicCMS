@@ -249,10 +249,10 @@
         </div>
     </div>
 <script>
-$('input[name=onlyUrl]',navTab.getCurrentPanel()).click(function(){
+$('input[name=onlyUrl]',navTab.getCurrentPanel()).on("click", function(){
     if($(this).is(':checked')){
         if(!$('input[name=customPath]',navTab.getCurrentPanel()).is(':checked')){
-            $('input[name=customPath]',navTab.getCurrentPanel()).click();
+            $('input[name=customPath]',navTab.getCurrentPanel()).trigger("click");
         }
         $('.onlyUrl',navTab.getCurrentPanel()).hide();
         $('.onlyUrl input[type=text]',navTab.getCurrentPanel()).val('');
@@ -260,21 +260,21 @@ $('input[name=onlyUrl]',navTab.getCurrentPanel()).click(function(){
         $('.onlyUrl',navTab.getCurrentPanel()).show();
     }
 });
-$('input[name=customPath]',navTab.getCurrentPanel()).click(function(){
+$('input[name=customPath]',navTab.getCurrentPanel()).on("click", function(){
     if($(this).is(':checked')){
         $('.customPath',navTab.getCurrentPanel()).show();
     } else {
         $('.customPath',navTab.getCurrentPanel()).hide();
     }
 });
-$('input[name=customContentPath]',navTab.getCurrentPanel()).click(function(){
+$('input[name=customContentPath]',navTab.getCurrentPanel()).on("click", function(){
     if($(this).is(':checked')){
         $('.customContentPath',navTab.getCurrentPanel()).show().find("input[name=contentPath]").addClass("required");;
     } else {
         $('.customContentPath',navTab.getCurrentPanel()).hide().find("input[name=contentPath]").removeClass("required");;
     }
 });
-$('input[name$=\\.categoryModel\\.customContentPath]',navTab.getCurrentPanel()).click(function(){
+$('input[name$=\\.categoryModel\\.customContentPath]',navTab.getCurrentPanel()).on("click", function(){
     checkCategoryModel();
     if($(this).is(':checked')){
         $(this).parent().parent().parent().find('.categoryModelCustomContentPath',navTab.getCurrentPanel()).show();
@@ -285,26 +285,26 @@ $('input[name$=\\.categoryModel\\.customContentPath]',navTab.getCurrentPanel()).
 <#if a?has_content>
     <@cms.categoryModelList categoryId=id!copyId>
         <#list list as a>
-            $('input[name$=\\.categoryModel\\.id\\.modelId][value=${a.id.modelId}]',navTab.getCurrentPanel()).parent().parent().find('input[type=checkbox][name$=\\.use]').click();
+            $('input[name$=\\.categoryModel\\.id\\.modelId][value=${a.id.modelId}]',navTab.getCurrentPanel()).parent().parent().find('input[type=checkbox][name$=\\.use]').trigger("click");
             <#if a.customContentPath>
-            $('input[name$=\\.categoryModel\\.id\\.modelId][value=${a.id.modelId}]',navTab.getCurrentPanel()).parent().parent().find('input[type=checkbox][name$=\\.categoryModel\\.customContentPath]').click();
+            $('input[name$=\\.categoryModel\\.id\\.modelId][value=${a.id.modelId}]',navTab.getCurrentPanel()).parent().parent().find('input[type=checkbox][name$=\\.categoryModel\\.customContentPath]').trigger("click");
             </#if>
             $('input[name$=\\.categoryModel\\.id\\.modelId][value=${a.id.modelId}]',navTab.getCurrentPanel()).parent().parent().find('input[name$=\\.categoryModel\\.contentPath]').val("${(a.contentPath?js_string?no_esc)!}");
             $('input[data-model=${a.id.modelId}]',navTab.getCurrentPanel()).val('${(a.templatePath)!}');
         </#list>
     </@cms.categoryModelList>
     <#if a.customPath>
-        $('input[name=customPath]',navTab.getCurrentPanel()).click();
+        $('input[name=customPath]',navTab.getCurrentPanel()).trigger("click");
     </#if>
     <#if a.customContentPath>
-        $('input[name=customContentPath]',navTab.getCurrentPanel()).click();
+        $('input[name=customContentPath]',navTab.getCurrentPanel()).trigger("click");
     </#if>
     <#if a.onlyUrl>
-        $('input[name=onlyUrl]',navTab.getCurrentPanel()).click();
+        $('input[name=onlyUrl]',navTab.getCurrentPanel()).trigger("click");
     </#if>
 <#else>
     <#if categoryType?has_content && categoryType.onlyUrl>
-        $('input[name=onlyUrl]',navTab.getCurrentPanel()).click();
+        $('input[name=onlyUrl]',navTab.getCurrentPanel()).trigger("click");
     </#if>
 </#if>
 checkCategoryModel();

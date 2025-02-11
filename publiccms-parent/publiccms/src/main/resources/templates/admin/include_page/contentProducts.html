@@ -2,8 +2,8 @@
 <table class="list nowrap itemDetail products" addButton="<@t.page 'button.new_line'/>" batchButton="<@t.page 'button.batch_upload'/>" batchUrl="common/batchUpload.html?field=cover&fileTypes=image" width="100%">
     <thead>
         <tr>
-            <th type="attach" name="products[#index#].cover" size="50" lookupGroup="products[#index#]" lookupUrl="common/upload.html?field=cover&fileTypes=image"><@t.page 'cover'/></th>
-            <th type="text" name="products[#index#].title" fieldClass="required"  size="50" fieldAttrs="{'maxlength':100}"><@t.page 'title'/></th>
+            <th type="attach" name="products[#index#].cover" size="50" lookupGroup="products[#index#]" fieldClass="preview" lookupUrl="common/upload.html?field=cover&fileTypes=image"><@t.page 'cover'/></th>
+            <th type="text" name="products[#index#].title" fieldClass="required"size="50" fieldAttrs="{'maxlength':100}"><@t.page 'title'/></th>
             <th type="text" name="products[#index#].price" fieldClass="required number" size="10" fieldAttrs="{'maxlength':20}"><@t.page 'product.price'/></th>
             <th type="text" name="products[#index#].inventory" fieldClass="required digits" fieldAttrs="{'maxlength':20,min:1}" size="10"><@t.page 'product.inventory'/></th>
             <th type="text" name="products[#index#].minQuantity" fieldClass="digits" size="10" fieldAttrs="{'maxlength':20}"><@t.page 'product.quantity_limit.min'/></th>
@@ -45,6 +45,4 @@
 </#if>
     </tbody>
 </table>
-<#include "../include_page/preview.html"/>
-<@preview 'product' '.products' 'tr td input[name$=cover]'/>
 </#macro>

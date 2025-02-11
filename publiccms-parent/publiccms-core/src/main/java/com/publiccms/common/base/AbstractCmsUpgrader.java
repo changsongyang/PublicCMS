@@ -27,6 +27,7 @@ import com.publiccms.common.tools.CommonUtils;
 import com.publiccms.common.tools.ExtendUtils;
 import com.publiccms.common.tools.UserPasswordUtils;
 import com.publiccms.entities.sys.SysExtendField;
+import com.publiccms.logic.component.config.ImageConfigComponent;
 import com.publiccms.logic.component.config.SafeConfigComponent;
 import com.publiccms.logic.component.site.SiteComponent;
 import com.publiccms.logic.component.template.MetadataComponent;
@@ -163,6 +164,43 @@ public abstract class AbstractCmsUpgrader {
                             insertStatement.setShort(1, rs.getShort("site_id"));
                             insertStatement.setString(2, "safe");
                             insertStatement.setString(3, ExtendUtils.getExtendString(safeConfig, ""));
+                            insertStatement.executeUpdate();
+                        }
+                    } catch (ClassCastException e) {
+                        stringWriter.write(e.getMessage());
+                        stringWriter.write(System.lineSeparator());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (SQLException e2) {
+            stringWriter.write(e2.getMessage());
+            stringWriter.write(System.lineSeparator());
+            e2.printStackTrace();
+        }
+    }
+    
+    protected void updateImageConfig(StringWriter stringWriter, Connection connection) {
+        try (Statement statement = connection.createStatement();
+                ResultSet rs = statement.executeQuery("select * from sys_config_data where code = 'code'");
+                PreparedStatement insertStatement = connection
+                        .prepareStatement("insert into sys_config_data (site_id, code, data) VALUES (?, ?, ?)")) {
+            while (rs.next()) {
+                if (null != rs.getString("data")) {
+                    String data = rs.getString("data");
+                    try {
+                        Map<String, String> imageConfig = new HashMap<>();
+                        Map<String, String> siteConfig = ExtendUtils.getExtendMap(data);
+                        {
+                            String value = siteConfig.remove(ImageConfigComponent.CONFIG_MAX_IMAGE_WIDTH);
+                            if (null == value) {
+                                imageConfig.put(ImageConfigComponent.CONFIG_MAX_IMAGE_WIDTH, value);
+                            }
+                        }
+                        if (!imageConfig.isEmpty()) {
+                            insertStatement.setShort(1, rs.getShort("site_id"));
+                            insertStatement.setString(2, ImageConfigComponent.CONFIG_CODE);
+                            insertStatement.setString(3, ExtendUtils.getExtendString(imageConfig, ""));
                             insertStatement.executeUpdate();
                         }
                     } catch (ClassCastException e) {

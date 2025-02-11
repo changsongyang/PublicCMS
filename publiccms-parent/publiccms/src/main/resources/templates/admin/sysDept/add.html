@@ -134,21 +134,21 @@
                 </ul>
             </fieldset>
     <script>
-        $('input[name=ownsAllCategory]',navTab.getCurrentPanel()).click(function(){
+        $('input[name=ownsAllCategory]',navTab.getCurrentPanel()).on("click", function(){
             if($(this).is(':checked')) {
                 $('.ownsAllCategory',navTab.getCurrentPanel()).hide();
             } else {
                 $('.ownsAllCategory',navTab.getCurrentPanel()).show();
             }
         });
-        $('input[name=ownsAllPage]',navTab.getCurrentPanel()).click(function(){
+        $('input[name=ownsAllPage]',navTab.getCurrentPanel()).on("click", function(){
             if($(this).is(':checked')) {
                 $('.ownsAllPage',navTab.getCurrentPanel()).hide();
             } else {
                 $('.ownsAllPage',navTab.getCurrentPanel()).show();
             }
         });
-        $('input[name=ownsAllConfig]',navTab.getCurrentPanel()).click(function(){
+        $('input[name=ownsAllConfig]',navTab.getCurrentPanel()).on("click", function(){
             if($(this).is(':checked')) {
                 $('.ownsAllConfig',navTab.getCurrentPanel()).hide();
             } else {
@@ -157,7 +157,7 @@
         });
     <#if a?has_content>
         <#if a.ownsAllPage>
-        $('input[name=ownsAllPage]',navTab.getCurrentPanel()).click();
+        $('input[name=ownsAllPage]',navTab.getCurrentPanel()).trigger("click");
         </#if>
         <@sys.deptItemList itemType='page' deptId=a.id>
             <#list page.list as a>
@@ -165,7 +165,7 @@
             </#list>
         </@sys.deptItemList>
         <#if a.ownsAllCategory>
-        $('input[name=ownsAllCategory]',navTab.getCurrentPanel()).click();
+        $('input[name=ownsAllCategory]',navTab.getCurrentPanel()).trigger("click");
         </#if>
         <@sys.deptItemList itemType='category' deptId=a.id>
             <#list page.list as a>
@@ -173,7 +173,7 @@
             </#list>
         </@sys.deptItemList>
         <#if a.ownsAllConfig>
-        $('input[name=ownsAllConfig]',navTab.getCurrentPanel()).click();
+        $('input[name=ownsAllConfig]',navTab.getCurrentPanel()).trigger("click");
         </#if>
         <@sys.deptItemList itemType='config' deptId=a.id>
             <#list page.list as a>

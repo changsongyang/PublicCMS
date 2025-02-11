@@ -80,8 +80,8 @@
                                 <@t.page 'array'/>:
                                 <input name="defaultValue" type="hidden"/>
                                 <input name="categoryName" readonly="readonly" type="text" size="10"/>
-                                <a class="btnLook hide defauleValueId" href="cmsCategory/lookup.html?field=defaultValue" lookupGroup=""></a>
-                                <a class="btnLook hide defauleValueCode" href="cmsCategory/lookup.html?field=defaultValue&useCode=true" lookupGroup=""></a>
+                                <a class="btnLook hide defaultValueId" href="cmsCategory/lookup.html?field=defaultValue" lookupGroup=""></a>
+                                <a class="btnLook hide defaultValueCode" href="cmsCategory/lookup.html?field=defaultValue&useCode=true" lookupGroup=""></a>
                             </label>
                             <a href="javascript:;" class="btnText green" onclick="addParameter($('input[name=\'parameterName\']',navTab.getCurrentPanel()).val(),$('input[name=\'array\']',navTab.getCurrentPanel()).prop('checked'),$('input[name=\'required\']',navTab.getCurrentPanel()).prop('checked'),$('select[name=\'parameterType\']',navTab.getCurrentPanel()).val(),$('select[name=\'parameterType\'] option:selected',navTab.getCurrentPanel()).text(),$('input[name=\'parameterAlias\']',navTab.getCurrentPanel()).val(),$('input[name=\'categoryName\']',navTab.getCurrentPanel()).val());return false;"><i class="icon-ok"></i><@t.page 'button.add'/></a>
                         </div>
@@ -179,7 +179,7 @@
             }
             $box.append($('<input type=\"hidden\"/>').attr("name","parameterTypeMap["+parameterName+"].name").val(parameterName)).append($('<input type=\"hidden\"/>').attr("name","parameterTypeMap["+parameterName+"].alias").val(alias));
             $box.append("<input type=\"hidden\" name=\"parameterTypeMap["+parameterName+"].type\" value=\""+parameterType+"\"/> <input type=\"hidden\" name=\"parameterTypeMap["+parameterName+"].array\" value=\""+array+"\"/> <input type=\"hidden\" name=\"parameterTypeMap["+parameterName+"].required\" value=\""+required+"\"/><a href=\"javascript:;\"><i class=\"icon-remove-sign\"></i></a>");
-            if( 'content' == parameterType || 'category.code' == parameterType && value){
+            if( ('category' == parameterType || 'category.code' == parameterType )&& value){
                 $box.append($('<input type=\"hidden\"/>').attr("name","parameterTypeMap["+parameterName+"].defaultValue").val(value)).append(':').append(value);
             }
             $('.parametersBox',navTab.getCurrentPanel()).append($box);
@@ -222,16 +222,16 @@
             <textarea name="content" class="hide" escape="true"><@tools.fileContent path=path>${(object)!}</@tools.fileContent></textarea>
             <script>
         <#if site.useStatic&&(a.publishPath)?has_content>
-                $('input[name=useStatic]',navTab.getCurrentPanel()).click();
+                $('input[name=useStatic]',navTab.getCurrentPanel()).trigger("click");
         </#if>
         <#if (a.useDynamic)?has_content&&a.useDynamic>
-                $('input[name=useDynamic]',navTab.getCurrentPanel()).click();
+                $('input[name=useDynamic]',navTab.getCurrentPanel()).trigger("click");
         </#if>
         <#if (a.needLogin)?has_content&&a.needLogin>
-                $('input[name=needLogin]',navTab.getCurrentPanel()).click();
+                $('input[name=needLogin]',navTab.getCurrentPanel()).trigger("click");
         </#if>
         <#if (a.needBody)?has_content&&a.needBody>
-                $('input[name=needBody]',navTab.getCurrentPanel()).click();
+                $('input[name=needBody]',navTab.getCurrentPanel()).trigger("click");
         </#if>
             </script>
     <#elseif demo?has_content>
@@ -245,7 +245,7 @@
                 $('input[name=useDynamic]',navTab.getCurrentPanel()).prop('checked',true).trigger('change');
         </#if>
         <#if needLogin?has_content&&'true'=needLogin>
-            $('input[name=needLogin]',navTab.getCurrentPanel()).click();
+            $('input[name=needLogin]',navTab.getCurrentPanel()).trigger("click");
         </#if>
         <#switch demo>
             <#case "index.html">
@@ -290,7 +290,7 @@
     <#else>
             <textarea name="content" class="hide" escape="true"><@html_escape><#include "demo/default.html" parse=false/></@html_escape></textarea>
             <script>
-                $('input[name=useDynamic]',navTab.getCurrentPanel()).click();
+                $('input[name=useDynamic]',navTab.getCurrentPanel()).trigger("click");
             </script>
     </#if>
         </div>

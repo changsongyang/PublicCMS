@@ -39,7 +39,7 @@ public class ${entityName}${directiveSuffix} extends AbstractTemplateDirective {
             ${idType!'Long'}[] ids = handler.get${idType!'Long'}Array("ids");
             if (CommonUtils.notEmpty(ids)) {
                 List<${entityName}> entityList = service.getEntitys(ids);
-                Map<String, ${entityName}> map = CommonUtils.listToMap(entityList, k -> k.getId().toString(), null, null);
+                Map<String, ${entityName}> map = CommonUtils.listToMapSorted(entityList, k -> k.getId().toString(), null, ids, null);
                 handler.put("map", map).render();
             }
         }

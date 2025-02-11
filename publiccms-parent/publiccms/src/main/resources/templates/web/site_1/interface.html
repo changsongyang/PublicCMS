@@ -176,15 +176,15 @@
         });
     }
     $(function(){
-        $('input[name=showParameters]').click(function(){
+        $('input[name=showParameters]').on("click", function(){
             if($(this).is(':checked')){
                 $('#sendData').val($('#sendData').val()+getSymbol($('#sendData').val())+'showParameters=true');
             }else{
                 $('#sendData').val($('#sendData').val().replace('&showParameters=true','').replace('?showParameters=true&','?').replace('?showParameters=true',''));
             }
         });
-        $('input:radio[name=api]').eq(0).click();
-        $('input[name=api]').click(function(){
+        $('input:radio[name=api]').eq(0).trigger("click");
+        $('input[name=api]').on("click", function(){
             init();
         });
         init();

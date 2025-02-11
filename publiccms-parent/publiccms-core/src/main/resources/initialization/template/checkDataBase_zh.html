@@ -84,7 +84,7 @@ select {
 
 
     <script>
-        $("input[type=checkbox]").click(function() {
+        $("input[type=checkbox]").on("click", () {
             if ($(this).is(':checked')) {
                 $(".buttons button:last").addClass("active");
             } else {
@@ -93,7 +93,7 @@ select {
         });
 
         var step = 0;
-        $(".buttons button").click(function() {
+        $(".buttons button").on("click", () {
             if (!$(this).hasClass("active")) {
                 return;
             }

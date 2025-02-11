@@ -7,6 +7,7 @@ import java.util.function.BinaryOperator;
 import org.apache.http.client.config.RequestConfig;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 /**
@@ -21,7 +22,7 @@ public abstract class Constants {
     /**
      * Json Mapper
      */
-    public static final ObjectMapper objectMapper = JsonMapper.builder().build();
+    public static final ObjectMapper objectMapper = JsonMapper.builder().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false).build();
 
     /**
      * Default Request Config

@@ -180,13 +180,11 @@ $('input[name=\'categoryName\']',navTab.getCurrentPanel()).on('change',function(
                 <dl class="nowrap">
                     <dt>${(model.fieldTextMap['cover'])!}:</dt>
                     <dd>
-                        <input name="cover"<#if requiredFieldList?seq_contains('cover')> class="required"</#if> value="${(a.cover)!}" maxlength="300" size="50" type="text"/>
+                        <input name="cover" class="preview<#if requiredFieldList?seq_contains('cover')> required</#if>" value="${(a.cover)!}" maxlength="300" size="50" type="text"/>
                         <a class="btnAttach" href="common/upload.html?field=cover&fileTypes=image&width=${(model.coverWidth)!}&height=${(model.coverHeight)!}" lookupGroup="" width="1000" height="600">${(model.fieldTextMap['cover'])!}</a>
                         <a class="view icon-eye-open" ref="cover" data-prefix="${getFileUploadPrefix()}" href="javascript:void(0);" target="_blank"><@t.page 'button.view'/></a>
                         <label><a class="button" href="cmsContent/contentImage.html" lookupGroup="" width="1000" height="600"><@t.page 'button.fillcover' t.pageMessage('editor')/></a></label>
                         <#if (model.coverWidth)?has_content && (model.coverHeight)?has_content><span class="info">${(model.coverWidth)!}*${(model.coverHeight)!}</span></#if>
-                        <#include "../include_page/preview.html"/>
-                        <@preview 'content' 'input[name=cover]'/>
                     </dd>
                 </dl>
             </#if>
@@ -299,7 +297,7 @@ $('input[name=\'categoryName\']',navTab.getCurrentPanel()).on('change',function(
         </#if>
     </div>
 <script>
-$('input[name=checked]',navTab.getCurrentPanel()).click(function(){
+$('input[name=checked]',navTab.getCurrentPanel()).on("click", function(){
     if($(this).is(':checked')){
         $('input[name=draft]',navTab.getCurrentPanel()).parent().parent().hide();
     }else{
@@ -307,7 +305,7 @@ $('input[name=checked]',navTab.getCurrentPanel()).click(function(){
     }
 });
 <#if fieldList?has_content && fieldList?seq_contains('copied')>
-$('input[name=copied]',navTab.getCurrentPanel()).click(function(){
+$('input[name=copied]',navTab.getCurrentPanel()).on("click", function(){
     if($(this).is(':checked')) {
         $('.copied',navTab.getCurrentPanel()).show();
         $('.copied input[data-required=true]',navTab.getCurrentPanel()).addClass('required');
@@ -317,11 +315,11 @@ $('input[name=copied]',navTab.getCurrentPanel()).click(function(){
     }
 });
     <#if a?has_content && a.copied>
-$('input[name=copied]',navTab.getCurrentPanel()).click();
+$('input[name=copied]',navTab.getCurrentPanel()).trigger("click");
     </#if>
 </#if>
 <#if a?has_content && 1=a.status || !a?has_content>
-$('input[name=checked]',navTab.getCurrentPanel()).click();
+$('input[name=checked]',navTab.getCurrentPanel()).trigger("click");
 </#if>
 </script>
 </form>

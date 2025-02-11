@@ -3,6 +3,8 @@
 new feature:
 
 1. add otp login
+1. add watermark config
+1. add fingerprint login
 
 ## 202406.f
 

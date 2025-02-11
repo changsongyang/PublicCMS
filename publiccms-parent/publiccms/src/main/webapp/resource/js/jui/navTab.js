@@ -328,7 +328,7 @@ var navTab = {
                         navTab._loadUrlCallback($panel);
                     });
                 } else {
-                    $pagerForm.submit();
+                    $pagerForm.trigger("submit");
                 }
             }
         } else {

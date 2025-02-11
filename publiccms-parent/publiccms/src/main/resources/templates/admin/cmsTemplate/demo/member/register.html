@@ -59,7 +59,7 @@
     <script src="${site.dynamicPath!}resource/plugins/jquery/jquery.min.js"></script>
     <script>
     function logout(){
-        $("form").submit();
+        $("form").trigger("submit");
     }
     </script>
     <script>

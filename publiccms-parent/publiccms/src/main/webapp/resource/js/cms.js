@@ -187,7 +187,7 @@ window.addEventListener("message", function(event) {
                     $("input[name=templatePath]",navTab.getCurrentPanel()).val(op.templatePath);
                     $("input[name=itemType]",navTab.getCurrentPanel()).val(op.itemType);
                     $("input[name=itemId]",navTab.getCurrentPanel()).val(op.itemId);
-                    $("form",navTab.getCurrentPanel()).submit();
+                    $("form",navTab.getCurrentPanel()).trigger("submit");
                     $("#audioLoadPlay")[0].play();
                 }
             } else if("enter" === op.diyevent) {
